@@ -1,4 +1,5 @@
 from genericpath import exists, isdir
+from re import L
 import cv2
 import os
 
@@ -53,7 +54,7 @@ def createDirectories():
     if(directoriesSkipped > 0): # If directoriesSkipped is above 0, we display a message saying we skipped X amount of directories.
         print(O + "[!]" + W + " Skipped creating " + O + str(directoriesSkipped) + W + " directories, because they already exist. Images will be replaced instead.");
 
-def main():
+def userPathInput():
     global iDir;
 
     iDir = str(input(B + "[i] " + W + "Enter directory " + italicText("e.g. /my/example/path") + " (leave empty for current): ")); # Saves userinput into iDir
@@ -64,18 +65,30 @@ def main():
         if(isdir(iDir)):
             if(iDir[-1] == "/" or iDir[-1] == "\\"): # If iDir has a slash or backslash at the end, this will remove it so scanDirectory() works properly.
                 iDir = iDir[:-1]
-            print(G + "[+] " + W + "Using " + italicText(iDir) + " as directory.\n");
-            
+            print(G + "[+] " + W + "Using " + italicText(iDir) + " as directory.\n");      
         else:
             print(R + "[!]" + O + " Directory " + W + italicText(iDir) + O + " is invalid.");
-            main();
-        
+            userPathInput();
 
-    scalePercentage = input(B + "[i] " + W + "Enter scale percentage " + italicText("e.g. 0.00 - 1.00") + " (leave empty for 0.25): ");
-    if(scalePercentage == ""):
+def userScaleInput():
+    global scale;
+
+    iScale = input(B + "[i] " + W + "Enter scale percentage " + italicText("e.g. 0.00 - 1.00") + " (leave empty for 0.25): ");
+    if(iScale == ""):
         print(G + "[+] " + W + "User input left empty, using " + italicText(str(scale)) + " as scale percentage.");
     else:
-        print(G + "[+] " + W + "Using " + italicText(str(scale)) + " as scale percentage.");
+        try:
+            scale = float(iScale);
+            print(G + "[+] " + W + "Using " + italicText(iScale) + " as scale percentage.\n");
+        except:
+            print(R + "[!] " + W + italicText(iScale) + O + " is invalid.\n");
+            userScaleInput();
+
+def main():
+    clearConsole();
+
+    userPathInput();
+    userScaleInput();
 
     print("[#] Parsing all files & directories...")
     scanDirectory(iDir);
