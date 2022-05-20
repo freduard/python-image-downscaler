@@ -1,5 +1,4 @@
 from genericpath import exists, isdir
-from re import L
 import cv2
 import os
 
