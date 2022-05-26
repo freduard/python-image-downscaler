@@ -1,18 +1,21 @@
-from genericpath import exists, isdir
-import cv2
-import os
+from genericpath import exists, isdir;
+from pathlib import Path;
+import logging;
+import cv2;
+import os;
 
-images = []
-subDirectories = []
+images = [];
+subDirectories = [];
 directoriesSkipped = 0;
 
 # CONSOLE COLORS
-W  = '\033[0m'  # white (normal)
-R  = '\033[31m' # red
-G  = '\033[32m' # green
-O  = '\033[33m' # orange
-B  = '\033[34m' # blue
+W  = '\033[0m'; # white (normal)
+R  = '\033[31m'; # red
+G  = '\033[32m'; # green
+O  = '\033[33m'; # orange
+B  = '\033[34m'; # blue
 
+logging.getLogger(cv2.__name__).setLevel(logging.WARNING); # Reduces OpenCV2 logs to only warnings to not clutter up the console.
 clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear'); # A way to clear the console.
 cDir = os.getcwd(); # Set cDir to the current working directory.
 scale = 0.25;
@@ -34,10 +37,10 @@ def resizeImage(image):
 def scanDirectory(path):
     for root, _, files in os.walk(path): # I have no idea how these 2 for loops work.
         for file in files:
-            if(file.endswith(".jpg") and "/downscaled/" not in os.path.join(root, file)): # If image doesn't have /downscaled/ in it's path, we add it to images[].
+            if(file.endswith(".jpg") and str(Path("downscaled")) not in os.path.join(root, file)): # If image doesn't have /downscaled/ in it's path, we add it to images[].
                 images.append(os.path.join(root, file));
         
-        if("/downscaled/" not in os.path.join(root, file)): # If sub-directory doesn't have /downscaled/ in it's path, we add it to subDirectories[].
+        if(str(Path("downscaled")) not in os.path.join(root, file)): # If sub-directory doesn't have /downscaled/ in it's path, we add it to subDirectories[].
             subDirectories.append(os.path.join(root, file).replace(file, "").replace(iDir, os.path.join(iDir, "downscaled")));
 
 def createDirectories():
@@ -89,15 +92,19 @@ def main():
     userPathInput();
     userScaleInput();
 
-    print("[#] Parsing all files & directories...")
+    print("\n[#] Parsing all files & directories...")
     scanDirectory(iDir);
 
     print("[#] Recreating original directories & path tree...")
     createDirectories();
 
-    print("[#] Downscaling all images found...");
+    print("\n[#] Downscaling all images found...");
     for img in images:
         resizeImage(img);
 
 clearConsole();
-main();
+
+try:
+    main();
+except:
+    print(R + "[!] INTERNAL ERROR");
