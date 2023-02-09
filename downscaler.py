@@ -37,7 +37,7 @@ def resizeImage(image):
 def scanDirectory(path):
     for root, _, files in os.walk(path): # I have no idea how these 2 for loops work.
         for file in files:
-            if(file.endswith(".jpg") and str(Path("downscaled")) not in os.path.join(root, file)): # If image doesn't have /downscaled/ in it's path, we add it to images[].
+            if(file.endswith(".jpg") or file.endswith(".JPG") or file.endswith(".png") or file.endswith(".PNG") and str(Path("downscaled")) not in os.path.join(root, file)): # If image doesn't have /downscaled/ in it's path, we add it to images[].
                 images.append(os.path.join(root, file));
         
         if(str(Path("downscaled")) not in os.path.join(root, file)): # If sub-directory doesn't have /downscaled/ in it's path, we add it to subDirectories[].
